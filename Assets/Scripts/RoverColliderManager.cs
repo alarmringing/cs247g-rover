@@ -16,7 +16,7 @@ public class RoverColliderManager : MonoBehaviour
         collider = GetComponent<Collider2D>();
     }
 
-    void OnTriggerEnter2D(Collider2D collision)
+    void OnTriggerStay2D(Collider2D collision)
     {
         RoverPlayerController controller = collision.gameObject.GetComponent<RoverPlayerController>();
         if (!controller) return;
