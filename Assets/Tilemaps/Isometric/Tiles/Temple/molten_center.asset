@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: molten_center
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: 21300000, guid: 43d4aad50c92a7844b9ad0a04dfc51be, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0.16862746, b: 1, a: 1}
   m_Transform:
     e00: 1
     e01: 0
