@@ -23,6 +23,16 @@ public class RoverPlayerController : MonoBehaviour
     private Rigidbody2D rbody;
     private float movementSpeed = 1f;
 
+    // Battery
+    public Slider batterySlider;
+    public float timeLimitSeconds = 30f;
+    public float transformCost = 3f; // In seconds.
+
+    // Restart
+    public GameObject restartButton;
+    private Vector3 startPosition;
+    private bool gameEndState = false;
+
     private void Awake()
     {
         rbody = GetComponent<Rigidbody2D>();
@@ -32,22 +42,30 @@ public class RoverPlayerController : MonoBehaviour
         scanText.text = ""; //line added for scanning purposes
         scanMode = false; //line added for scanning purposes
         ScanMessage.SetActive(scanMode);
+
+        startPosition = GetComponent<Transform>().position;
+        Restart();
     }
 
 
     // Update is called once per frame
     private void Update()
     {
+        if (gameEndState) return;
+
         ScanCheck();
 
         TransformController();
-        
+        batterySlider.value -= Time.deltaTime / timeLimitSeconds;
     }
 
     void FixedUpdate()
     {
+        if (gameEndState) return;
         if (scanMode) return;
+
         MovementController();
+        if (batterySlider.value <= 0) GameEnd(false);
     }
 
     public void ChangeMovementSpeed(float newSpeed) { movementSpeed = newSpeed; }
@@ -56,6 +74,7 @@ public class RoverPlayerController : MonoBehaviour
 
     private void ScanCheck()
     {
+        
         // Scan key is pressed AND rover is close to some interactable object
         if (Input.GetKeyDown("h") && interactableTarget != null)
         {
@@ -105,8 +124,30 @@ public class RoverPlayerController : MonoBehaviour
 
     private void TransformMode(string goal)
     {
+        batterySlider.value -= transformCost / timeLimitSeconds;
         gameObject.tag = goal;
         roverState.text = goal;
         Debug.Log("Transforming to: " + goal);
+    }
+
+    private void GameEnd(bool success)
+    {
+        gameEndState = true;
+        if (success) {
+            scanText.text = "You feel the soul of your own kind within this alien object.";
+        } else {
+            scanText.text = "You feel the last trickle of power leaving the system.";
+        }
+        ScanMessage.SetActive(true);
+        restartButton.SetActive(true);
+    }
+
+    public void Restart()
+    {
+        GetComponent<Transform>().position = startPosition;
+        batterySlider.value = 1.0f; // Battery start full.
+        restartButton.SetActive(false);
+        gameEndState = false;
+        ScanMessage.SetActive(false);
     }
 }
